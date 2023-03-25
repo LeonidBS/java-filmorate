@@ -22,7 +22,7 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        film.setId(films.size());
+        film.setId(films.size()+1);
         films.add(film);
         log.debug("Добавен фильм: {}", film);
         return film;
@@ -31,12 +31,12 @@ public class FilmController {
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
 
-        if (films.size() <= film.getId()) {
+        if (films.size() < film.getId() || film.getId() < 1) {
             log.error("Фильма с переданным ID {} не существует", film.getId());
             throw new ValidationExcpretion("Не существует фильма с ID " + film.getId());
         }
 
-        films.set(film.getId(), film);
+        films.set(film.getId()-1, film);
         log.debug("Обновлен фильм: {}", film);
         return film;
     }

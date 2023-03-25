@@ -54,7 +54,7 @@ class FilmControllerTest {
     public void updateFilmWhenIdIsNotExist() {
         Film film1 = new Film("name", "description",
                 LocalDate.parse("1995-12-27"), Duration.parse("PT90M"));
-        Film film2 = new Film(1, "Updated name", "Updated description",
+        Film film2 = new Film(2, "Updated name", "Updated description",
                 LocalDate.parse("1995-12-27"), Duration.parse("PT95M"));
         FilmController filmController = new FilmController();
         filmController.create(film1);

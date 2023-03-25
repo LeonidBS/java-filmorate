@@ -185,7 +185,7 @@ public class UserControllerIntegrationTest {
     public void updatePutWhenUserFieldsAreCorrect() throws Exception {
         User user1 = new User("email@leo.ru", "login", "name",
                 LocalDate.parse("1995-12-27"));
-        User user2 = new User(0, "updatedemail@leo.ru", "updatedlogin", "Updated name",
+        User user2 = new User(1, "updatedemail@leo.ru", "updatedlogin", "Updated name",
                 LocalDate.parse("1999-12-25"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();

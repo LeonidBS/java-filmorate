@@ -16,7 +16,7 @@ class UserControllerTest {
     public void updateUserWhenIdIsNotExist() {
         User user1 = new User("email@leo.ru", "login", "name",
                 LocalDate.parse("1995-12-27"));
-        User user2 = new User(1, "updatedemail@leo.ru", "Updated login", "Updated name",
+        User user2 = new User(2, "updatedemail@leo.ru", "Updated login", "Updated name",
                 LocalDate.parse("1995-12-25"));
         UserController userController = new UserController();
         userController.create(user1);

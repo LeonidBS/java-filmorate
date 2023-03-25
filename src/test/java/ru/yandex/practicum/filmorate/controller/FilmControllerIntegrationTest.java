@@ -139,7 +139,7 @@ class FilmControllerIntegrationTest {
     public void updatePutWhenFilmFieldsAreCorrect() throws Exception {
         Film film1 = new Film("name1", "description1",
                 LocalDate.parse("2011-03-01"), Duration.parse("PT1H33M"));
-        Film film2 = new Film(0, "Updated name2", "Updated description2",
+        Film film2 = new Film(1, "Updated name2", "Updated description2",
                 LocalDate.parse("2001-03-01"), Duration.parse("PT1H55M"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();

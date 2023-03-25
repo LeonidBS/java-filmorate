@@ -28,7 +28,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        user.setId(users.size());
+        user.setId(users.size()+1);
         users.add(user);
         log.debug("Добавен пользователь: {}", user);
         return user;
@@ -37,12 +37,12 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
 
-        if (users.size() <= user.getId()) {
+        if (users.size() < user.getId() || user.getId() < 1) {
             log.error("Пользователь с переданным ID {} не существует", user.getId());
             throw new ValidationExcpretion("Не существует пользвателя с ID " + user.getId());
         }
 
-        users.set(user.getId(), user);
+        users.set(user.getId()-1, user);
         log.debug("Обновлен пользователь: {}", user);
         return user;
     }
