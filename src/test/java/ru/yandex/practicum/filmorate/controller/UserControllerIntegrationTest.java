@@ -32,7 +32,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -53,7 +53,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -70,7 +70,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -87,7 +87,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -104,7 +104,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -121,7 +121,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -138,7 +138,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -155,7 +155,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -172,7 +172,7 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -190,14 +190,14 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -219,7 +219,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -227,7 +227,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -245,7 +245,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -253,7 +253,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -271,7 +271,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -279,7 +279,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -297,7 +297,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -305,7 +305,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -323,7 +323,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -331,7 +331,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -349,7 +349,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -357,7 +357,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -375,7 +375,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -383,7 +383,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -401,7 +401,7 @@ public class UserControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -409,7 +409,7 @@ public class UserControllerIntegrationTest {
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(user2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -426,13 +426,13 @@ public class UserControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(user1);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/user")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/user"))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email").value(user1.getEmail()))

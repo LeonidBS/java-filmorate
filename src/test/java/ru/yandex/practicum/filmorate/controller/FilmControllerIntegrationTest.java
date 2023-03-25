@@ -33,7 +33,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -54,7 +54,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -71,7 +71,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -92,7 +92,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -109,7 +109,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -126,7 +126,7 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -144,14 +144,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -173,14 +173,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -198,14 +198,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -227,14 +227,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -252,14 +252,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -277,14 +277,14 @@ class FilmControllerIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
         jsonFilm = objectMapper.writeValueAsString(film2);
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
@@ -301,13 +301,13 @@ class FilmControllerIntegrationTest {
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/film")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andReturn();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/film"))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/films"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value(film.getName()))
