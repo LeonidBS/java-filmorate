@@ -31,14 +31,14 @@ public class Film {
     @AfterDate(date = "1895-12-27", message = "Дата релиза поздее даты выпуска первого фильма")
     private final LocalDate releaseDate;
 
-    @DurationIsPositive(message = "Продолжительность не положительная")
-    private final Duration duration;
+    @Positive(message = "Продолжительность не положительная")
+    private final int duration;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Film(@JsonProperty("name") String name,
                 @JsonProperty("description") String description,
                 @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("duration") Duration duration) {
+                @JsonProperty("duration") int duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;

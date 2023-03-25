@@ -10,26 +10,25 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FilmControllerTest {
     private static Validator validator;
 
     @BeforeAll
     public static void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
     }
 
     @Test
     public void dateValidatorFilmWhenReleaseDateIsBeforeReleaseOfFirstFilm() {
         Film film = new Film(1, "name", "description",
-                LocalDate.parse("1895-12-27"), Duration.parse("PT90M"));
+                LocalDate.parse("1895-12-27"), 90);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -43,7 +42,7 @@ class FilmControllerTest {
             descriptionString.append("a");
         }
         Film film = new Film(1, "name", descriptionString.toString(),
-                LocalDate.parse("2000-01-01"), Duration.parse("PT90M"));
+                LocalDate.parse("2000-01-01"), 90);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -53,9 +52,9 @@ class FilmControllerTest {
     @Test
     public void updateFilmWhenIdIsNotExist() {
         Film film1 = new Film("name", "description",
-                LocalDate.parse("1995-12-27"), Duration.parse("PT90M"));
+                LocalDate.parse("1995-12-27"), 90);
         Film film2 = new Film(2, "Updated name", "Updated description",
-                LocalDate.parse("1995-12-27"), Duration.parse("PT95M"));
+                LocalDate.parse("1995-12-27"), 95);
         FilmController filmController = new FilmController();
         filmController.create(film1);
 
