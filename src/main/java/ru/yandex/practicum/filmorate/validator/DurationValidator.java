@@ -14,5 +14,4 @@ public class DurationValidator implements ConstraintValidator<DurationIsPositive
     public boolean isValid(Duration filmDuration, ConstraintValidatorContext cxt) {
         return !filmDuration.isNegative() && !filmDuration.isZero();
     }
-
 }

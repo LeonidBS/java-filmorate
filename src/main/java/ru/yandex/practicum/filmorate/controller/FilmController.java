@@ -7,23 +7,27 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final List<Film> films = new ArrayList<>();
+    private final Map<Integer, Film> films = new HashMap<>();
+    private int id = 0;
 
     @GetMapping
     public List<Film> findAll() {
-        return films;
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        film.setId(films.size()+1);
-        films.add(film);
+        id++;
+        film.setId(id);
+        films.put(id, film);
         log.debug("Добавен фильм: {}", film);
         return film;
     }
@@ -36,7 +40,7 @@ public class FilmController {
             throw new ValidationExcpretion("Не существует фильма с ID " + film.getId());
         }
 
-        films.set(film.getId()-1, film);
+        films.put(film.getId(), film);
         log.debug("Обновлен фильм: {}", film);
         return film;
     }

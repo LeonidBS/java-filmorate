@@ -14,17 +14,16 @@ import java.time.LocalDate;
 public class User {
 
     @PositiveOrZero
-    private int id;
+    private Integer id;
 
-    @NotNull(message = "Отсутсвует email")
+    @NotBlank(message = "Отсутсвует email")
     @Email(message = "Переданная строка не соответввует формату email")
     @Pattern(regexp = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
             message = "Не корректный email")
     private final String email;
 
-    @NotNull(message = "Отсутсвует логин")
-    @NotBlank(message = "Строка с логином пустая")
-    @Pattern(regexp = "[^\\s]+", message = "в логине есть пробелы")
+    @NotBlank(message = "Отсутсвует логин")
+    @Pattern(regexp = "[^\\s]+", message = "В логине есть пробелы")
     private final String login;
 
     private String name;

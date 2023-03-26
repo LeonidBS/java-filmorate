@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.AfterDate;
-import ru.yandex.practicum.filmorate.validator.DurationIsPositive;
 
-import javax.validation.constraints.*;
-import java.time.Duration;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
@@ -17,17 +18,15 @@ import java.time.LocalDate;
 public class Film {
 
     @PositiveOrZero
-    private int id;
+    private Integer id;
 
-    @NotNull(message = "Отсутсвует название фильма")
-    @NotBlank(message = "Поле названия фильма пустое")
+    @NotBlank(message = "Отсутсвует название фильма")
     private final String name;
 
     @Size(max = 200, message = "Длина описания превышает максимально допустиму 200 символов")
     private final String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @PastOrPresent(message = "Дата релиза указана в будущем")
     @AfterDate(date = "1895-12-27", message = "Дата релиза поздее даты выпуска первого фильма")
     private final LocalDate releaseDate;
 

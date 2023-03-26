@@ -15,7 +15,9 @@ public class DateValidator implements ConstraintValidator<AfterDate, LocalDate> 
     @Override
     public boolean isValid(LocalDate filmReleaseDate,
                            ConstraintValidatorContext cxt) {
-        return filmReleaseDate.isAfter(startDate);
+        if (filmReleaseDate != null) {
+            return filmReleaseDate.isAfter(startDate);
+        }
+        return false;
     }
-
 }
