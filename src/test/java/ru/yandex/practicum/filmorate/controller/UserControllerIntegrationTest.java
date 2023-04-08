@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -490,7 +491,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Переданый ID: q не является целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -513,7 +514,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdNotFoundException))
                 .andExpect(result -> assertEquals("Не существует пользвателя с ID: 3",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -566,7 +567,7 @@ public class UserControllerIntegrationTest {
                         .getResolvedException() instanceof ValidationException))
                 .andExpect(result -> assertEquals("Пользователи: " + inMemoryUserStorage.findById(2) +
                                 " и " + inMemoryUserStorage.findById(1) + "  уже являются друзьями",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -578,7 +579,7 @@ public class UserControllerIntegrationTest {
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Один или оба переданных ID: q," +
                                 " 1.0 не являются целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -613,7 +614,7 @@ public class UserControllerIntegrationTest {
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Один или оба переданных ID: q," +
                                 " 1.0 не являются целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -676,7 +677,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Переданый ID: q не является целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -724,7 +725,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Один или оба переданных ID: q," +
-                        " 1.0 не являются целым числом", result.getResolvedException().getMessage()));
+                        " 1.0 не являются целым числом", Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
 }

@@ -31,8 +31,7 @@ public class UserController {
             return userStorage.findById(Integer.parseInt(id));
         } catch (NumberFormatException e) {
             log.error("Переданый ID: {} не является целым числом", id);
-            throw new IdPassingException(String.format("Переданый ID: %s не является целым числом",
-                    id));
+            throw new IdPassingException(String.format("Переданый ID: %s не является целым числом", id));
         }
     }
 

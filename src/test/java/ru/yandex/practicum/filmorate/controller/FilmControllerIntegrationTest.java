@@ -21,6 +21,7 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +41,7 @@ class FilmControllerIntegrationTest {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
         this.mockMvc = MockMvcBuilders.standaloneSetup(new FilmController(inMemoryFilmStorage,
-                        new FilmService(inMemoryFilmStorage)))
+                        new FilmService(inMemoryFilmStorage, inMemoryUserStorage)))
                 .build();
     }
 
@@ -378,13 +379,13 @@ class FilmControllerIntegrationTest {
 
     @Test
     public void finByIdWhenIdIsNotInteger() throws Exception {
-              this.mockMvc.perform(MockMvcRequestBuilders.get("/films/q")
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/films/q")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Переданый ID: q не является целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -406,7 +407,7 @@ class FilmControllerIntegrationTest {
                 .andExpect(result -> assertTrue(result
                         .getResolvedException() instanceof IdNotFoundException))
                 .andExpect(result -> assertEquals("Не существует фильма с ID: 2",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -480,7 +481,7 @@ class FilmControllerIntegrationTest {
                         .getResolvedException() instanceof IdPassingException))
                 .andExpect(result -> assertEquals("Один или оба переданных ID: q," +
                                 " 1.0 не являются целым числом",
-                        result.getResolvedException().getMessage()));
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -514,22 +515,22 @@ class FilmControllerIntegrationTest {
             }
         }
 
-            this.mockMvc.perform(MockMvcRequestBuilders.get("/films/popular/?count=1"))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
-                    .andExpect(jsonPath("$[0].name").value(inMemoryFilmStorage
-                            .findById(2).getName()))
-                    .andExpect(jsonPath("$[0].description").value(inMemoryFilmStorage
-                            .findById(2).getDescription()))
-                    .andExpect(jsonPath("$[0].releaseDate").value(inMemoryFilmStorage
-                            .findById(2).getReleaseDate().toString()))
-                    .andExpect(jsonPath("$[0].duration").value(inMemoryFilmStorage
-                            .findById(2).getDuration()))
-                    .andExpect(jsonPath("$[0].likes", Matchers.<Map<Integer,
-                            Emoji>>hasToString(inMemoryFilmStorage.findById(2)
-                            .getLikes().toString())))
-                    .andReturn();
-            }
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/films/popular/?count=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].name").value(inMemoryFilmStorage
+                        .findById(2).getName()))
+                .andExpect(jsonPath("$[0].description").value(inMemoryFilmStorage
+                        .findById(2).getDescription()))
+                .andExpect(jsonPath("$[0].releaseDate").value(inMemoryFilmStorage
+                        .findById(2).getReleaseDate().toString()))
+                .andExpect(jsonPath("$[0].duration").value(inMemoryFilmStorage
+                        .findById(2).getDuration()))
+                .andExpect(jsonPath("$[0].likes", Matchers.<Map<Integer,
+                        Emoji>>hasToString(inMemoryFilmStorage.findById(2)
+                        .getLikes().toString())))
+                .andReturn();
+    }
 
     @Test
     public void getPopularCountIsNotSpecified() throws Exception {

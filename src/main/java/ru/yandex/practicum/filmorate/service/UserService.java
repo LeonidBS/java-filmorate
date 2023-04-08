@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FriendsNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,7 +22,7 @@ public class UserService {
 
     public Friends addFriendById(Integer id, Integer friendId) {
 
-        if (id.equals(friendId) || id <= 0 || friendId <= 0) {
+        if (id.equals(friendId)) {
             log.error("Переданы не корректные ID пользователей: {}, {}", id, friendId);
             throw new IdPassingException("Переданы не корректные ID пользователей: "
                     + id + ", " + friendId);
@@ -56,6 +56,7 @@ public class UserService {
                         return userStorage.findById(friends.getInviter());
                     }
                 })
+                .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
     }
 
@@ -63,32 +64,26 @@ public class UserService {
         userStorage.findById(id);
         userStorage.findById(friendId);
         Friends friends = new Friends(id, friendId);
-        if (userStorage.findAllFriends().contains(friends)) {
-            return userStorage.findAllFriends().stream()
-                    .filter(f -> (f.getInviter().equals(id) || f.getInvitee().equals(id))
-                            || (f.getInviter().equals(friendId) || f.getInvitee().equals(friendId)))
-                    .filter(f -> !f.equals(friends))
-                    .map(f -> {
-                        if (f.getInviter().equals(id) || f.getInviter().equals(friendId)) {
-                            return userStorage.findById(f.getInvitee());
-                        } else {
-                            return userStorage.findById(f.getInviter());
-                        }
-                    })
-                    .collect(Collectors.toList())
-                    .stream()
-                    .collect(Collectors.groupingBy(Function.identity()))
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getValue().size() == 2)
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
-        } else {
-            log.error("Переданы не корректные ID пользователей: {}, {}. Список друзей не содержит " +
-                    "пользователей с такими ID", id, friendId);
-            throw new FriendsNotFoundException("Переданы не корректные ID пользователей: "
-                    + id + ", " + friendId + ". Список друзей не содержит" +
-                    " пользователей с такими ID");
-        }
+
+        return userStorage.findAllFriends().stream()
+                .filter(f -> (f.getInviter().equals(id) || f.getInvitee().equals(id))
+                        || (f.getInviter().equals(friendId) || f.getInvitee().equals(friendId)))
+                .filter(f -> !f.equals(friends))
+                .map(f -> {
+                    if (f.getInviter().equals(id) || f.getInviter().equals(friendId)) {
+                        return userStorage.findById(f.getInvitee());
+                    } else {
+                        return userStorage.findById(f.getInviter());
+                    }
+                })
+                .collect(Collectors.toList())
+                .stream()
+                .collect(Collectors.groupingBy(Function.identity()))
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue().size() == 2)
+                .map(Map.Entry::getKey)
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 }

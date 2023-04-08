@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UpdateFilmException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -66,9 +67,9 @@ class FilmControllerTest {
 
         Executable executable = () -> inMemoryFilmStorage.update(film2);
 
-        IdNotFoundException idNotFoundException = assertThrows(IdNotFoundException.class, executable);
-        assertEquals("Не существует фильма с ID " + film2.getId(),
-                idNotFoundException.getMessage());
+        UpdateFilmException updateFilmException = assertThrows(UpdateFilmException.class, executable);
+        assertEquals("Ошибка идентификации фильма. Не существует фильма с ID " + film2.getId(),
+                updateFilmException.getMessage());
     }
 
     @Test
@@ -89,7 +90,7 @@ class FilmControllerTest {
     public void getTopFilmsFilmWhenCountIsNotCorrect() {
         InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
         InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(inMemoryFilmStorage);
+        FilmService filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
 
         for (int i = 1; i < 16; i++) {
             inMemoryFilmStorage.create(new Film("name" + i, "description" + i,

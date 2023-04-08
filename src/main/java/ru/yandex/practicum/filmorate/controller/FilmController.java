@@ -60,13 +60,13 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable String filmId, @PathVariable String userId) {
+    public Film deleteLike(@PathVariable String id, @PathVariable String userId) {
         try {
-            return filmService.deleteAssessment(Integer.parseInt(filmId), Integer.parseInt(userId));
+            return filmService.removeLike(Integer.parseInt(id), Integer.parseInt(userId));
         } catch (NumberFormatException e) {
-            log.error("Один или оба переданных ID: {}, {} не являются целым числом", filmId, userId);
+            log.error("Один или оба переданных ID: {}, {} не являются целым числом", id, userId);
             throw new IdPassingException(String.format("Один или оба переданных ID: %s," +
-                    " %s не являются целым числом", filmId, userId));
+                    " %s не являются целым числом", id, userId));
         }
     }
 

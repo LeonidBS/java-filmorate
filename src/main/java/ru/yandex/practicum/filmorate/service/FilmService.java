@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Emoji;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +19,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
+
 
     public Film addLike(Integer filmId, Integer userId) {
         Film film = filmStorage.findById(filmId);
 
+        userStorage.findById(userId);
         Map<Integer, Emoji> assessmentMap = film.getLikes();
         if (assessmentMap == null) {
             assessmentMap = new HashMap<>();
@@ -29,12 +33,13 @@ public class FilmService {
         assessmentMap.put(userId, Emoji.LIKE);
         film.setLikes(assessmentMap);
 
-        return filmStorage.findById(filmId);
+        return film;
     }
 
-    public Film deleteAssessment(Integer filmId, Integer userId) {
+    public Film removeLike(Integer filmId, Integer userId) {
         Film film = filmStorage.findById(filmId);
 
+        userStorage.findById(userId);
         Map<Integer, Emoji> assessmentMap = film.getLikes();
         assessmentMap.remove(userId);
         film.setLikes(assessmentMap);
@@ -51,8 +56,6 @@ public class FilmService {
         }
 
         return filmStorage.findAll().stream()
-                .filter(f -> f.getLikes() != null)
-                .filter(f -> !(f.getLikes().isEmpty()))
                 .collect(Collectors.toMap(Film::getId, f -> f.getLikes().size()))
                 .entrySet()
                 .stream()

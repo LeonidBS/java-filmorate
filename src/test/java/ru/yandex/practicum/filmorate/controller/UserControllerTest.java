@@ -62,9 +62,9 @@ class UserControllerTest {
 
         Executable executable = () -> userService.addFriendById(0, 1);
 
-        IdPassingException idPassingException = assertThrows(IdPassingException.class, executable);
-        assertEquals("Переданы не корректные ID пользователей: 0, 1",
-                idPassingException.getMessage());
+        IdNotFoundException idNotFoundException = assertThrows(IdNotFoundException.class, executable);
+        assertEquals("Не существует пользвателя с ID: 0",
+                idNotFoundException.getMessage());
     }
 
     @Test
