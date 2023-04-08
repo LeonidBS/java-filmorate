@@ -12,9 +12,11 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
+
 public class Film {
 
     @PositiveOrZero
@@ -33,15 +35,23 @@ public class Film {
     @Positive(message = "Продолжительность не положительная")
     private final int duration;
 
+   /*
+    Задание с лайками выполнено с доп. функциональностью намерено
+    */
+
+    private Map<Integer, Emoji> likes;
+
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Film(@JsonProperty("name") String name,
                 @JsonProperty("description") String description,
                 @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("duration") int duration) {
+                @JsonProperty("duration") int duration,
+                @JsonProperty("likes") Map<Integer, Emoji> likes) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.likes = likes;
     }
 }
 
