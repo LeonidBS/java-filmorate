@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Emoji;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +18,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserService userService;
 
 
     public Film addLike(Integer filmId, Integer userId) {
         Film film = filmStorage.findById(filmId);
 
-        userStorage.findById(userId);
+        userService.findById(userId);
         Map<Integer, Emoji> assessmentMap = film.getLikes();
         if (assessmentMap == null) {
             assessmentMap = new HashMap<>();
@@ -39,10 +38,9 @@ public class FilmService {
     public Film removeLike(Integer filmId, Integer userId) {
         Film film = filmStorage.findById(filmId);
 
-        userStorage.findById(userId);
+        userService.findById(userId);
         Map<Integer, Emoji> assessmentMap = film.getLikes();
         assessmentMap.remove(userId);
-        film.setLikes(assessmentMap);
         filmStorage.update(film);
         return film;
     }

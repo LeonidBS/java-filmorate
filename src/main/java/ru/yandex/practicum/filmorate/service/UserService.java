@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Friends;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Component
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
@@ -85,5 +87,9 @@ public class UserService {
                 .map(Map.Entry::getKey)
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
+    }
+
+    public User findById(Integer id) {
+        return userStorage.findById(id);
     }
 }

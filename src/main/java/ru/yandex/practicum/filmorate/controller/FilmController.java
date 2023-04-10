@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -25,15 +24,9 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable String id) {
+    public Film getById(@PathVariable Integer id) {
 
-        try {
-            return filmStorage.findById(Integer.parseInt(id));
-        } catch (NumberFormatException e) {
-            log.error("Переданый ID: {} не является целым числом", id);
-            throw new IdPassingException(String.format("Переданый ID: %s не является целым числом",
-                    id));
-        }
+            return filmStorage.findById(id);
     }
 
     @PostMapping
@@ -48,37 +41,20 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film putLike(@PathVariable String id, @PathVariable String userId) {
+    public Film putLike(@PathVariable Integer id, @PathVariable Integer userId) {
 
-        try {
-            return filmService.addLike(Integer.parseInt(id), Integer.parseInt(userId));
-        } catch (NumberFormatException e) {
-            log.error("Один или оба переданных ID: {}, {} не являются целым числом", id, userId);
-            throw new IdPassingException(String.format("Один или оба переданных ID: %s," +
-                    " %s не являются целым числом", id, userId));
-        }
+        return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable String id, @PathVariable String userId) {
-        try {
-            return filmService.removeLike(Integer.parseInt(id), Integer.parseInt(userId));
-        } catch (NumberFormatException e) {
-            log.error("Один или оба переданных ID: {}, {} не являются целым числом", id, userId);
-            throw new IdPassingException(String.format("Один или оба переданных ID: %s," +
-                    " %s не являются целым числом", id, userId));
-        }
+    public Film deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+
+        return filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") String count) {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count) {
 
-        try {
-            return filmService.getTopFilms(Integer.parseInt(count));
-        } catch (NumberFormatException e) {
-            log.error("Переданый ID: {} не является целым числом", count);
-            throw new IdPassingException(String.format("Переданый ID: %s не является целым числом",
-                    count));
-        }
+        return filmService.getTopFilms(count);
     }
 }

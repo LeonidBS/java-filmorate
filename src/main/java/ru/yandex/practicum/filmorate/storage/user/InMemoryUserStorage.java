@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
+import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,7 +14,7 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
-    private int id = 0;
+    private int id = 1;
     private final Map<Friends, Boolean> allFriends = new HashMap<>();
 
     @Override
@@ -39,9 +40,8 @@ public class InMemoryUserStorage implements UserStorage {
             user.setName(user.getLogin());
         }
 
-        id++;
-        user.setId(id);
-        users.put(id, user);
+        user.setId(id++);
+        users.put(user.getId(), user);
         log.debug("Добавен пользователь: {}", user);
         return user;
     }
@@ -77,8 +77,14 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public Friends deleteFriends(Integer invitor, Integer invitee) {
         Friends friends = new Friends(invitor, invitee);
-        allFriends.put(friends, true);
-        return friends;
+        if (allFriends.remove(friends) != null) {
+            log.debug("Пользователи с ID {}, {} удалены из друзей: ", invitor,invitee);
+            return friends;
+        } else {
+            log.error("Друзей с ID {}, {} не существует", invitor,invitee);
+            throw new IdPassingException("Не существует  друзей с ID :" +
+                    invitor + ", " + invitee);
+        }
     }
 
     @Override

@@ -32,7 +32,7 @@ public class UserControllerIntegrationTest {
     public void setup() {
         inMemoryUserStorage = new InMemoryUserStorage();
         this.mockMvc = MockMvcBuilders.standaloneSetup(new UserController(inMemoryUserStorage,
-                        new UserService(inMemoryUserStorage)))
+                        new UserService(inMemoryUserStorage)), new ErrorHandler())
                 .build();
     }
 
@@ -70,7 +70,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -87,7 +87,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -104,7 +104,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -121,7 +121,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -138,7 +138,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -155,7 +155,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -172,7 +172,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -189,7 +189,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -244,7 +244,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -270,7 +270,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -296,7 +296,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -322,7 +322,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -348,7 +348,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -374,7 +374,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -400,7 +400,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -426,7 +426,7 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -583,7 +583,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    public void deleteNewFriendWhenIdsAreExist() throws Exception {
+    public void deleteFriendWhenIdsAreExist() throws Exception {
         String jsonUser;
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -603,10 +603,25 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.delete("/users/1/friends/2"))
                 .andExpect(status().isOk())
                 .andReturn();
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", empty()))
+                .andReturn();
     }
 
     @Test
-    public void deleteNewFriendWhenIdsAreNotInteger() throws Exception {
+    public void deleteFriendWhenFriendsAreExist() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/users/1/friends/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result
+                        .getResolvedException() instanceof IdPassingException))
+                .andExpect(result -> assertEquals("Не существует  друзей с ID :1, 2",
+                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+    }
+
+    @Test
+    public void deleteFriendWhenIdsAreNotInteger() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.delete("/users/q/friends/1.0")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

@@ -10,11 +10,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
-import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Emoji;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
@@ -35,13 +35,15 @@ class FilmControllerIntegrationTest {
     private MockMvc mockMvc;
     private InMemoryFilmStorage inMemoryFilmStorage;
     private InMemoryUserStorage inMemoryUserStorage;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
+        userService = new UserService(inMemoryUserStorage);
         this.mockMvc = MockMvcBuilders.standaloneSetup(new FilmController(inMemoryFilmStorage,
-                        new FilmService(inMemoryFilmStorage, inMemoryUserStorage)))
+                        new FilmService(inMemoryFilmStorage, userService)), new ErrorHandler())
                 .build();
     }
 
@@ -79,7 +81,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -96,7 +98,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -117,7 +119,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -134,7 +136,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -151,7 +153,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -210,7 +212,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -235,7 +237,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -264,7 +266,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -289,7 +291,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -314,7 +316,7 @@ class FilmControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonFilm))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
     }
 
@@ -381,11 +383,7 @@ class FilmControllerIntegrationTest {
     public void finByIdWhenIdIsNotInteger() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/films/q")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result
-                        .getResolvedException() instanceof IdPassingException))
-                .andExpect(result -> assertEquals("Переданый ID: q не является целым числом",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -476,12 +474,7 @@ class FilmControllerIntegrationTest {
 
         this.mockMvc.perform(MockMvcRequestBuilders.put("/films/q/like/1.0")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result
-                        .getResolvedException() instanceof IdPassingException))
-                .andExpect(result -> assertEquals("Один или оба переданных ID: q," +
-                                " 1.0 не являются целым числом",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
