@@ -12,9 +12,9 @@
 
     <groupId>ru.yandex.practicum</groupId>
     <artifactId>filmorate</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>filmorate</name>
-    <description>Фильмотека от Яндекс Практикум 032023.</description>
+    <description>Фильмотека от Яндекс Практикум 042023.</description>
 
     <properties>
         <java.version>11</java.version>

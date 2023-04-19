@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.yandex.practicum.filmorate.validator.AfterDate;
 
 import javax.validation.constraints.NotBlank;
@@ -12,10 +13,31 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+
 public class Film {
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public Film(@JsonProperty("name") String name,
+                @JsonProperty("description") String description,
+                @JsonProperty("releaseDate") LocalDate releaseDate,
+                @JsonProperty("duration") int duration,
+                @JsonProperty("likes") Map<Integer, Emoji> likes) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        if (likes == null) {
+            this.likes = new HashMap<>();
+        } else {
+            this.likes = likes;
+        }
+    }
 
     @PositiveOrZero
     private Integer id;
@@ -31,17 +53,13 @@ public class Film {
     private final LocalDate releaseDate;
 
     @Positive(message = "Продолжительность не положительная")
+
     private final int duration;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public Film(@JsonProperty("name") String name,
-                @JsonProperty("description") String description,
-                @JsonProperty("releaseDate") LocalDate releaseDate,
-                @JsonProperty("duration") int duration) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-    }
+   /*
+    Задание с лайками выполнено с доп. функциональностью намерено
+    */
+
+    private Map<Integer, Emoji> likes;
 }
 
