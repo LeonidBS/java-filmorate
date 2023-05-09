@@ -4,16 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IdPassingException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -24,15 +27,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserControllerIntegrationTest {
+public class UserControllerIntegrationTestDbStorage {
     private MockMvc mockMvc;
-    private InMemoryUserStorage inMemoryUserStorage;
+    private UserDbStorage userDbStorage;
+    private DataSource dataSource = new EmbeddedDatabaseBuilder()
+            .setName("filmoratetestdb")
+            .setType(EmbeddedDatabaseType.H2)
+            .addScript("schema.sql")
+            .addScript("data.sql")
+            .continueOnError(true).build();
 
     @BeforeEach
     public void setup() {
-        inMemoryUserStorage = new InMemoryUserStorage();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        userDbStorage = new UserDbStorage(jdbcTemplate);
+
         this.mockMvc = MockMvcBuilders.standaloneSetup(new UserController(
-                        new UserService(inMemoryUserStorage)), new ErrorHandler())
+                        new UserService(userDbStorage)), new ErrorHandler())
                 .build();
     }
 
@@ -498,13 +509,13 @@ public class UserControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email")
-                        .value(inMemoryUserStorage.findById(1).getEmail()))
+                        .value(userDbStorage.findById(1).getEmail()))
                 .andExpect(jsonPath("login")
-                        .value(inMemoryUserStorage.findById(1).getLogin()))
+                        .value(userDbStorage.findById(1).getLogin()))
                 .andExpect(jsonPath("name")
-                        .value(inMemoryUserStorage.findById(1).getName()))
+                        .value(userDbStorage.findById(1).getName()))
                 .andExpect(jsonPath("birthday")
-                        .value(inMemoryUserStorage.findById(1).getBirthday().toString()))
+                        .value(userDbStorage.findById(1).getBirthday().toString()))
                 .andReturn();
     }
 
@@ -564,35 +575,6 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("invitee")
                         .value(2))
                 .andReturn();
-    }
-
-    @Test
-    public void putNewFriendWhenFriendsAreAlreadyAdded() throws Exception {
-        String jsonUser;
-        for (int i = 1; i < 3; i++) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
-            this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
-                            .content(jsonUser))
-                    .andReturn();
-        }
-
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/2"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/2/friends/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result
-                        .getResolvedException() instanceof ValidationException))
-                .andExpect(result -> assertEquals("Пользователи: " + inMemoryUserStorage.findById(2) +
-                                " и " + inMemoryUserStorage.findById(1) + "  уже являются друзьями",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -691,13 +673,13 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email")
-                        .value(inMemoryUserStorage.findById(2).getEmail()))
+                        .value(userDbStorage.findById(2).getEmail()))
                 .andExpect(jsonPath("$[0].login")
-                        .value(inMemoryUserStorage.findById(2).getLogin()))
+                        .value(userDbStorage.findById(2).getLogin()))
                 .andExpect(jsonPath("$[0].name")
-                        .value(inMemoryUserStorage.findById(2).getName()))
+                        .value(userDbStorage.findById(2).getName()))
                 .andExpect(jsonPath("$[0].birthday")
-                        .value(inMemoryUserStorage.findById(2).getBirthday().toString()))
+                        .value(userDbStorage.findById(2).getBirthday().toString()))
                 .andReturn();
     }
 
@@ -716,7 +698,11 @@ public class UserControllerIntegrationTest {
                     .andReturn();
         }
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends"))
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/2"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/2/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", empty()))
                 .andReturn();
@@ -753,20 +739,23 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/3"))
                 .andExpect(status().isOk())
                 .andReturn();
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/3/friends/1"))
+                .andExpect(status().isOk())
+                .andReturn();
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users/3/friends/2"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends/common/2"))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends/common/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email")
-                        .value(inMemoryUserStorage.findById(3).getEmail()))
+                        .value(userDbStorage.findById(2).getEmail()))
                 .andExpect(jsonPath("$[0].login")
-                        .value(inMemoryUserStorage.findById(3).getLogin()))
+                        .value(userDbStorage.findById(2).getLogin()))
                 .andExpect(jsonPath("$[0].name")
-                        .value(inMemoryUserStorage.findById(3).getName()))
+                        .value(userDbStorage.findById(2).getName()))
                 .andExpect(jsonPath("$[0].birthday")
-                        .value(inMemoryUserStorage.findById(3).getBirthday().toString()))
+                        .value(userDbStorage.findById(2).getBirthday().toString()))
                 .andReturn();
     }
 

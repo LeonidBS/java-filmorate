@@ -7,10 +7,6 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
-/*
-Задание по друзьям намеренно выполнено с расширенным функционалом
-*/
-
 @Data
 public class Friends {
     @NotBlank(message = "Id приглашающего пользователя не передано")
@@ -18,6 +14,8 @@ public class Friends {
 
     @NotBlank(message = "Id приглашенного пользователя не передано")
     private final Integer invitee;
+
+    private Boolean status;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Friends(@JsonProperty("inviter") Integer inviter,

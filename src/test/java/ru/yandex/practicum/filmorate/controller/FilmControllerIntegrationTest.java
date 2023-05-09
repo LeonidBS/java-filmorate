@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -12,6 +11,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.model.Emoji;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -31,18 +32,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class FilmControllerIntegrationTest {
-    @Autowired
     private MockMvc mockMvc;
     private InMemoryFilmStorage inMemoryFilmStorage;
     private InMemoryUserStorage inMemoryUserStorage;
     private UserService userService;
+
+    private Mpa mpa = new Mpa(1, "NC-17");
 
     @BeforeEach
     public void setup() {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
         userService = new UserService(inMemoryUserStorage);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new FilmController(inMemoryFilmStorage,
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new FilmController(
                         new FilmService(inMemoryFilmStorage, userService)), new ErrorHandler())
                 .build();
     }
@@ -50,7 +52,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void createPostWhenFilmFieldsAreCorrect() throws Exception {
         Film film = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -71,7 +74,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void createPostWhenNameIsNull() throws Exception {
         Film film = new Film(null, "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -88,7 +92,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void createPostWhenNameIsEmpty() throws Exception {
         Film film = new Film("", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -109,7 +114,8 @@ class FilmControllerIntegrationTest {
             descriptionString.append("a");
         }
         Film film = new Film(null, descriptionString.toString(),
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -126,7 +132,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void createPostWhenReleaseDateIsBeforeReleaseOfFirstFilm() throws Exception {
         Film film = new Film(null, "description1",
-                LocalDate.parse("1895-12-27"), 93, new HashMap<>());
+                LocalDate.parse("1895-12-27"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -143,7 +150,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void createPostWhenDurationIsNotPositive() throws Exception {
         Film film = new Film(null, "description1",
-                LocalDate.parse("1995-12-27"), 1, new HashMap<>());
+                LocalDate.parse("1995-12-27"), 1, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -163,9 +171,11 @@ class FilmControllerIntegrationTest {
         likes.put(1, Emoji.LIKE);
         likes.put(2, Emoji.LIKE);
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, likes);
+                LocalDate.parse("2011-03-01"), 93, likes,
+                mpa, new ArrayList<>());
         Film film2 = new Film(1, "Updated name2", "Updated description2",
-                LocalDate.parse("2001-03-01"), 115, likes);
+                LocalDate.parse("2001-03-01"), 115, likes,
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -192,11 +202,41 @@ class FilmControllerIntegrationTest {
     }
 
     @Test
+    public void updateFilmWhenIdIsNotExist() throws Exception {
+        Film film1 = new Film("name", "description",
+                LocalDate.parse("1995-12-27"), 90, new HashMap<>(),
+                mpa, new ArrayList<>());
+        Film film2 = new Film(2, "Updated name", "Updated description",
+                LocalDate.parse("1995-12-27"), 95, new HashMap<>(),
+                mpa, new ArrayList<>());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String jsonFilm = objectMapper.writeValueAsString(film1);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL)
+                        .content(jsonFilm))
+                .andReturn();
+
+        jsonFilm = objectMapper.writeValueAsString(film2);
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/films")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.ALL)
+                        .content(jsonFilm))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+    }
+
+    @Test
     public void updatePutWhenNameIsNull() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         Film film2 = new Film(1, null, "Updated description2",
-                LocalDate.parse("2001-03-01"), 115, new HashMap<>());
+                LocalDate.parse("2001-03-01"), 115, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -219,9 +259,11 @@ class FilmControllerIntegrationTest {
     @Test
     public void updatePutWhenNameIsEmpty() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         Film film2 = new Film(1, "", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -244,13 +286,15 @@ class FilmControllerIntegrationTest {
     @Test
     public void updatePutWhenDescriptionIsSizeMoreThan200() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         StringBuilder descriptionString = new StringBuilder();
         for (int i = 0; i < 201; i++) {
             descriptionString.append("a");
         }
         Film film2 = new Film(1, null, descriptionString.toString(),
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -273,9 +317,11 @@ class FilmControllerIntegrationTest {
     @Test
     public void updatePutWhenReleaseDateIsBeforeReleaseOfFirstFilm() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         Film film2 = new Film(1, null, "description1",
-                LocalDate.parse("1895-12-27"), 93, new HashMap<>());
+                LocalDate.parse("1895-12-27"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -298,9 +344,11 @@ class FilmControllerIntegrationTest {
     @Test
     public void updatePutWhenDurationIsNotPositive() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         Film film2 = new Film(1, null, "description1",
-                LocalDate.parse("1995-12-27"), 1, new HashMap<>());
+                LocalDate.parse("1995-12-27"), 1, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -323,7 +371,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void getFilmListRequest() throws Exception {
         Film film = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film);
@@ -349,9 +398,11 @@ class FilmControllerIntegrationTest {
         likes.put(1, Emoji.LIKE);
         likes.put(2, Emoji.LIKE);
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, likes);
+                LocalDate.parse("2011-03-01"), 93, likes,
+                mpa, new ArrayList<>());
         Film film2 = new Film("name2", "description2",
-                LocalDate.parse("2001-03-01"), 115, new HashMap<>());
+                LocalDate.parse("2001-03-01"), 115, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -389,7 +440,8 @@ class FilmControllerIntegrationTest {
     @Test
     public void finByIdWhenIdIsNotExist() throws Exception {
         Film film1 = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>());
+                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
+                mpa, new ArrayList<>());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonFilm = objectMapper.writeValueAsString(film1);
@@ -418,7 +470,8 @@ class FilmControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
                     "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>()));
+                    90 + i, new HashMap<>(),
+                    mpa, new ArrayList<>()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -459,7 +512,8 @@ class FilmControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
                     "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>()));
+                    90 + i, new HashMap<>(),
+                    mpa, new ArrayList<>()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -487,7 +541,8 @@ class FilmControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
                     "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>()));
+                    90 + i, new HashMap<>(),
+                    mpa, new ArrayList<>()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -535,7 +590,8 @@ class FilmControllerIntegrationTest {
         for (int i = 1; i < 15; i++) {
             jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
                     "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>()));
+                    90 + i, new HashMap<>(),
+                    mpa, new ArrayList<>()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -583,6 +639,5 @@ class FilmControllerIntegrationTest {
                         .getLikes().toString())))
                 .andReturn();
     }
-
 }
 
