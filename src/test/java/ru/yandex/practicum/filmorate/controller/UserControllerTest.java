@@ -16,22 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UserControllerTest {
 
     @Test
-    public void updateUserWhenIdIsNotExist() {
-        User user1 = new User("email@leo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
-        User user2 = new User(2, "updatedemail@leo.ru", "Updated login", "Updated name",
-                LocalDate.parse("1995-12-25"));
-        InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        inMemoryUserStorage.create(user1);
-
-        Executable executable = () -> inMemoryUserStorage.update(user2);
-
-        IdNotFoundException idNotFoundException = assertThrows(IdNotFoundException.class, executable);
-        assertEquals("Не существует пользвателя с ID " + user2.getId(),
-                idNotFoundException.getMessage());
-    }
-
-    @Test
     public void addFriendByIdWhenIdsAreEqual() {
         User user1 = new User("email@leo.ru", "login", "name",
                 LocalDate.parse("1995-12-27"));

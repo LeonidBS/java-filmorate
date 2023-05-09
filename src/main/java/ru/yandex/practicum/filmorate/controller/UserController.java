@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,18 +16,17 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping
     public List<User> getAll() {
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User getById(@PathVariable String id) {
         try {
-            return userStorage.findById(Integer.parseInt(id));
+            return userService.findById(Integer.parseInt(id));
         } catch (NumberFormatException e) {
             log.error("Переданый ID: {} не является целым числом", id);
             throw new IdPassingException(String.format("Переданый ID: %s не является целым числом", id));
@@ -38,13 +36,13 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
 
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
 
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
