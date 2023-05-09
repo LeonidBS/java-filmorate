@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -21,5 +20,7 @@ public interface UserStorage {
 
     Friends deleteFriends(Integer invitor, Integer invitee);
 
-    Collection<Friends> findAllFriends();
+    List<User> findFriendsById(Integer id);
+
+    List<User> findMutualFriendsByTwoIds(Integer id, Integer friendId);
 }

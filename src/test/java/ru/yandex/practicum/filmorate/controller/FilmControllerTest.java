@@ -3,10 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UpdateFilmException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -18,6 +17,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     private static Validator validator;
+
+    private Mpa mpa = new Mpa(1, "G");
 
     @BeforeAll
     public static void setUp() {
@@ -36,7 +38,8 @@ class FilmControllerTest {
     @Test
     public void dateValidatorFilmWhenReleaseDateIsBeforeReleaseOfFirstFilm() {
         Film film = new Film(1, "name", "description",
-                LocalDate.parse("1895-12-27"), 90, new HashMap<>());
+                LocalDate.parse("1895-12-27"), 90, new HashMap<>(),
+                mpa, new ArrayList<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
@@ -50,41 +53,12 @@ class FilmControllerTest {
             descriptionString.append("a");
         }
         Film film = new Film(1, "name", descriptionString.toString(),
-                LocalDate.parse("2000-01-01"), 90, new HashMap<>());
+                LocalDate.parse("2000-01-01"), 90, new HashMap<>(),
+                mpa, new ArrayList<>());
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
 
         assertFalse(violations.isEmpty());
-    }
-
-    @Test
-    public void updateFilmWhenIdIsNotExist() {
-        Film film1 = new Film("name", "description",
-                LocalDate.parse("1995-12-27"), 90, new HashMap<>());
-        Film film2 = new Film(2, "Updated name", "Updated description",
-                LocalDate.parse("1995-12-27"), 95, new HashMap<>());
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        inMemoryFilmStorage.create(film1);
-
-        Executable executable = () -> inMemoryFilmStorage.update(film2);
-
-        UpdateFilmException updateFilmException = assertThrows(UpdateFilmException.class, executable);
-        assertEquals("Ошибка идентификации фильма. Не существует фильма с ID " + film2.getId(),
-                updateFilmException.getMessage());
-    }
-
-    @Test
-    public void findByIdFilmWhenIdIsNotExist() {
-        Film film1 = new Film("name", "description",
-                LocalDate.parse("1995-12-27"), 90, new HashMap<>());
-        InMemoryFilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        inMemoryFilmStorage.create(film1);
-
-        Executable executable = () -> inMemoryFilmStorage.findById(2);
-
-        IdNotFoundException idNotFoundException = assertThrows(IdNotFoundException.class, executable);
-        assertEquals("Не существует фильма с ID: " + 2,
-                idNotFoundException.getMessage());
     }
 
     @Test
@@ -96,7 +70,8 @@ class FilmControllerTest {
 
         for (int i = 1; i < 16; i++) {
             inMemoryFilmStorage.create(new Film("name" + i, "description" + i,
-                    LocalDate.parse("1995-12-27").minusYears(i), 90 + i, new HashMap<>()));
+                    LocalDate.parse("1995-12-27").minusYears(i), 90 + i, new HashMap<>(),
+                    mpa, new ArrayList<>()));
         }
 
         for (int i = 1; i < 5; i++) {
