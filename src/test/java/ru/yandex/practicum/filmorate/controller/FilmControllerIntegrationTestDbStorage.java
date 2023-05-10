@@ -34,8 +34,8 @@ class FilmControllerIntegrationTestDbStorage {
     private MockMvc mockMvc;
     private FilmDbStorage filmDbStorage;
     private UserDbStorage userDbStorage;
-    private UserService userService;
-    private DataSource dataSource = new EmbeddedDatabaseBuilder()
+
+    private final DataSource dataSource = new EmbeddedDatabaseBuilder()
             .setName("filmoratetestdb")
             .setType(EmbeddedDatabaseType.H2)
             .addScript("schema.sql")
@@ -44,27 +44,41 @@ class FilmControllerIntegrationTestDbStorage {
 
     private Mpa mpa = new Mpa();
     private List<Genre> genres = new ArrayList<>();
-    private Map<Integer, Emoji> likes = new HashMap<>();
-    private Film newfilm = new Film();
-    private Film updatedFilmId1 = new Film();
+    Film newfilm = Film.builder()
+            .name("name1")
+            .description("description1")
+            .releaseDate(LocalDate.now())
+            .duration(93)
+            .likes(new HashMap<>())
+            .mpa(new Mpa(1, "G"))
+            .genres(new ArrayList<>())
+            .build();
+
+    Film updatedFilmId1 = Film.builder()
+            .id(1)
+            .name("Updated name1")
+            .description("Updated description1")
+            .releaseDate(LocalDate.now())
+            .duration(115)
+            .likes(new HashMap<>())
+            .mpa(new Mpa(1, "G"))
+            .genres(new ArrayList<>())
+            .build();
 
     @BeforeEach
     public void setup() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         filmDbStorage = new FilmDbStorage(jdbcTemplate);
         userDbStorage = new UserDbStorage(jdbcTemplate);
-        userService = new UserService(userDbStorage);
+        UserService userService = new UserService(userDbStorage);
 
         mockMvc = MockMvcBuilders.standaloneSetup(new FilmController(
                         new FilmService(filmDbStorage, userService)), new ErrorHandler())
                 .build();
 
-        Mpa mpa = new Mpa(1, "G");
-        newfilm = new Film("name1", "description1",
-                LocalDate.parse("2011-03-01"), 93, new HashMap<>(),
-                mpa, new ArrayList<>());
-        updatedFilmId1 = new Film(1, "Updated name1", "Updated description1",
-                LocalDate.parse("2001-03-01"), 115, likes, mpa, genres);
+        updatedFilmId1.setLikes(new HashMap<>());
+        updatedFilmId1.setMpa(new Mpa(1, "G"));
+        updatedFilmId1.setGenres(new ArrayList<>());
     }
 
     @Test
@@ -462,7 +476,11 @@ class FilmControllerIntegrationTestDbStorage {
     public void addLikeWhenFilmIdAndUserIdIsExist() throws Exception {
         String jsonFilm;
         ObjectMapper objectMapper = new ObjectMapper();
-
+        Map<Integer, Emoji> likes1 = new HashMap<>();
+        likes1.put(1, Emoji.LIKE);
+        Map<Integer, Emoji> likes2 = new HashMap<>();
+        likes2.put(1, Emoji.LIKE);
+        likes2.put(2, Emoji.LIKE);
         objectMapper.findAndRegisterModules();
         Genre genre = new Genre(1, "Комедия");
         genres.add(genre);
@@ -485,8 +503,7 @@ class FilmControllerIntegrationTestDbStorage {
                 .andExpect(jsonPath("duration").value(filmDbStorage.findById(1)
                         .getDuration()))
                 .andExpect(jsonPath("likes", Matchers.<Map<Integer,
-                        Emoji>>hasToString(filmDbStorage.findById(1)
-                        .getLikes().toString())))
+                        Emoji>>hasToString(likes1.toString())))
                 .andReturn();
 
         mockMvc.perform(MockMvcRequestBuilders.put(String.format("/films/%d/like/%d", 1, 2)))
@@ -500,8 +517,7 @@ class FilmControllerIntegrationTestDbStorage {
                 .andExpect(jsonPath("duration").value(filmDbStorage.findById(1)
                         .getDuration()))
                 .andExpect(jsonPath("likes", Matchers.<Map<Integer,
-                        Emoji>>hasToString(filmDbStorage.findById(1)
-                        .getLikes().toString())))
+                        Emoji>>hasToString(likes2.toString())))
                 .andReturn();
     }
 
@@ -513,10 +529,16 @@ class FilmControllerIntegrationTestDbStorage {
         objectMapper.findAndRegisterModules();
 
         for (int i = 1; i < 3; i++) {
-            jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
-                    "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>(),
-                    mpa, new ArrayList<>()));
+            jsonFilm = objectMapper.writeValueAsString(
+                    Film.builder()
+                            .name("name" + i)
+                            .description("description" + i)
+                            .releaseDate(LocalDate.now().minusYears(i))
+                            .duration(90 + i)
+                            .likes(new HashMap<>())
+                            .mpa(new Mpa(1, "G"))
+                            .genres(new ArrayList<>())
+                            .build());
             mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -533,14 +555,19 @@ class FilmControllerIntegrationTestDbStorage {
     public void addLikeWhenFilmIdIsNotExist() throws Exception {
         String jsonFilm;
         ObjectMapper objectMapper = new ObjectMapper();
-
         objectMapper.findAndRegisterModules();
 
         for (int i = 1; i < 3; i++) {
-            jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
-                    "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>(),
-                    mpa, new ArrayList<>()));
+            jsonFilm = objectMapper.writeValueAsString(
+                    Film.builder()
+                            .name("name" + i)
+                            .description("description" + i)
+                            .releaseDate(LocalDate.now().minusYears(i))
+                            .duration(90 + i)
+                            .likes(new HashMap<>())
+                            .mpa(new Mpa(1, "G"))
+                            .genres(new ArrayList<>())
+                            .build());
             mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -548,7 +575,7 @@ class FilmControllerIntegrationTestDbStorage {
                     .andReturn();
         }
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/films/2/like/1")
+        mockMvc.perform(MockMvcRequestBuilders.put("/films/999/like/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -561,10 +588,16 @@ class FilmControllerIntegrationTestDbStorage {
         objectMapper.findAndRegisterModules();
 
         for (int i = 1; i < 3; i++) {
-            jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
-                    "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>(),
-                    mpa, new ArrayList<>()));
+            jsonFilm = objectMapper.writeValueAsString(
+                    Film.builder()
+                            .name("name" + i)
+                            .description("description" + i)
+                            .releaseDate(LocalDate.now().minusYears(i))
+                            .duration(90 + i)
+                            .likes(new HashMap<>())
+                            .mpa(new Mpa(1, "G"))
+                            .genres(new ArrayList<>())
+                            .build());
             mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -587,10 +620,16 @@ class FilmControllerIntegrationTestDbStorage {
         mpa.setId(1);
         mpa.setName("G");
         for (int i = 1; i < 3; i++) {
-            jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
-                    "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>(),
-                    mpa, new ArrayList<>()));
+            jsonFilm = objectMapper.writeValueAsString(
+                    Film.builder()
+                            .name("name" + i)
+                            .description("description" + i)
+                            .releaseDate(LocalDate.now().minusYears(i))
+                            .duration(90 + i)
+                            .likes(new HashMap<>())
+                            .mpa(new Mpa(1, "G"))
+                            .genres(new ArrayList<>())
+                            .build());
             mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -637,10 +676,16 @@ class FilmControllerIntegrationTestDbStorage {
         mpa.setId(1);
         mpa.setName("G");
         for (int i = 1; i < 15; i++) {
-            jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
-                    "description" + i, LocalDate.parse("1995-12-27").minusYears(i),
-                    90 + i, new HashMap<>(),
-                    mpa, new ArrayList<>()));
+            jsonFilm = objectMapper.writeValueAsString(
+                    Film.builder()
+                            .name("name" + i)
+                            .description("description" + i)
+                            .releaseDate(LocalDate.now().minusYears(i))
+                            .duration(90 + i)
+                            .likes(new HashMap<>())
+                            .mpa(new Mpa(1, "G"))
+                            .genres(new ArrayList<>())
+                            .build());
             mockMvc.perform(MockMvcRequestBuilders.post("/films")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -649,8 +694,12 @@ class FilmControllerIntegrationTestDbStorage {
         }
 
         for (int i = 1; i < 17; i++) {
-            userDbStorage.create(new User("email@leo" + i + ".ru", "login" + i,
-                    "name" + i, LocalDate.parse("1995-12-27").plusMonths(i)));
+            userDbStorage.create(User.builder()
+                    .email("email@leo" + i + ".ru")
+                    .login("login" + i)
+                    .name("name" + i)
+                    .birthday(LocalDate.parse("1995-12-27").plusMonths(i))
+                    .build());
         }
 
         for (int i = 2; i < 13; i++) {

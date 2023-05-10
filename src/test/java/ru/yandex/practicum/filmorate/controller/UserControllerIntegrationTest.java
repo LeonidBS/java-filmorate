@@ -42,12 +42,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
@@ -63,12 +63,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -80,12 +80,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -97,12 +97,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -114,12 +114,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -131,12 +131,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -148,12 +148,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -165,12 +165,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -182,12 +182,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.now().plusDays(1));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -201,18 +201,18 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1999-12-25"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(user2.getEmail()))
@@ -230,18 +230,18 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-25"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -255,19 +255,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -281,19 +281,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -307,19 +307,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -333,19 +333,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -359,19 +359,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -385,19 +385,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -411,19 +411,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -437,19 +437,19 @@ public class UserControllerIntegrationTest {
                 LocalDate.now().plusDays(1));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andReturn();
 
-        jsonFilm = objectMapper.writeValueAsString(user2);
+        jsonUser = objectMapper.writeValueAsString(user2);
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andReturn();
@@ -461,12 +461,12 @@ public class UserControllerIntegrationTest {
                 LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonFilm = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user1);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.ALL)
-                        .content(jsonFilm))
+                        .content(jsonUser))
                 .andReturn();
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/users"))

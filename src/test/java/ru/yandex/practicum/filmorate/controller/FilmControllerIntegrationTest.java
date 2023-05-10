@@ -464,8 +464,10 @@ class FilmControllerIntegrationTest {
     public void addLikeWhenFilmIdAndUserIdIsExist() throws Exception {
         String jsonFilm;
         ObjectMapper objectMapper = new ObjectMapper();
-
         objectMapper.findAndRegisterModules();
+        HashMap<Integer, Emoji> likes = new HashMap<>();
+        likes.put(2, Emoji.LIKE);
+        likes.put(3, Emoji.LIKE);
 
         for (int i = 1; i < 3; i++) {
             jsonFilm = objectMapper.writeValueAsString(new Film("name" + i,
@@ -487,19 +489,21 @@ class FilmControllerIntegrationTest {
         for (int j = 2; j < 4; j++) {
             this.mockMvc.perform(MockMvcRequestBuilders.put(String.format("/films/%d/like/%d", 2, j)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("name").value(inMemoryFilmStorage.findById(2)
-                            .getName()))
-                    .andExpect(jsonPath("description").value(inMemoryFilmStorage.findById(2)
-                            .getDescription()))
-                    .andExpect(jsonPath("releaseDate").value(inMemoryFilmStorage.findById(2)
-                            .getReleaseDate().toString()))
-                    .andExpect(jsonPath("duration").value(inMemoryFilmStorage.findById(2)
-                            .getDuration()))
-                    .andExpect(jsonPath("likes", Matchers.<Map<Integer,
-                            Emoji>>hasToString(inMemoryFilmStorage.findById(2)
-                            .getLikes().toString())))
                     .andReturn();
         }
+        this.mockMvc.perform(MockMvcRequestBuilders.get(String.format("/films/2")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").value(inMemoryFilmStorage.findById(2)
+                        .getName()))
+                .andExpect(jsonPath("description").value(inMemoryFilmStorage.findById(2)
+                        .getDescription()))
+                .andExpect(jsonPath("releaseDate").value(inMemoryFilmStorage.findById(2)
+                        .getReleaseDate().toString()))
+                .andExpect(jsonPath("duration").value(inMemoryFilmStorage.findById(2)
+                        .getDuration()))
+                .andExpect(jsonPath("likes", Matchers.<Map<Integer,
+                        Emoji>>hasToString(likes.toString())))
+                .andReturn();
     }
 
     @Test

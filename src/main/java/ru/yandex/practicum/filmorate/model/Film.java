@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import ru.yandex.practicum.filmorate.validator.AfterDate;
@@ -21,6 +22,7 @@ import java.util.Map;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class Film {
 
     @PositiveOrZero
@@ -43,14 +45,11 @@ public class Film {
     Задание с лайками выполнено с доп. функциональностью намерено
     */
 
-    private Map<Integer, Emoji> likes;
+    private Map<Integer, Emoji> likes = new HashMap<>();
 
     private Mpa mpa;
 
-    private List<Genre> genres;
-
-    public Film() {
-    }
+    private List<Genre> genres = new ArrayList<>();
 
     public Film(Integer id, String name, String description, LocalDate releaseDate,
                 int duration, Mpa mpa) {

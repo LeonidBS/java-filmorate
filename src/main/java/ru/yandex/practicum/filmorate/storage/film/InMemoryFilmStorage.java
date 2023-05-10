@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Emoji;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -66,12 +67,24 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addLike(Integer filmId, Integer userId) {
+        Film film = findById(filmId);
+        Map<Integer, Emoji> assessmentMap = film.getLikes();
 
+        if (assessmentMap == null) {
+            assessmentMap = new HashMap<>();
+        }
+
+        assessmentMap.put(userId, Emoji.LIKE);
+        film.setLikes(assessmentMap);
         return films.get(filmId);
     }
 
     @Override
     public Film removeLike(Integer filmId, Integer userId) {
+        Film film = findById(filmId);
+        Map<Integer, Emoji> assessmentMap = film.getLikes();
+        assessmentMap.remove(userId);
+        update(film);
 
         return films.get(filmId);
     }
