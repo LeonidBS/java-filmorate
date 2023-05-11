@@ -4,16 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IdPassingException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -24,22 +27,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserControllerIntegrationTest {
+public class UserControllerIntegrationTestDbStorage {
     private MockMvc mockMvc;
-    private InMemoryUserStorage inMemoryUserStorage;
+    private UserDbStorage userDbStorage;
+    private final DataSource dataSource = new EmbeddedDatabaseBuilder()
+            .setName("filmoratetestdb")
+            .setType(EmbeddedDatabaseType.H2)
+            .addScript("schema.sql")
+            .addScript("data.sql")
+            .continueOnError(true).build();
+    User user;
 
     @BeforeEach
     public void setup() {
-        inMemoryUserStorage = new InMemoryUserStorage();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        userDbStorage = new UserDbStorage(jdbcTemplate);
         this.mockMvc = MockMvcBuilders.standaloneSetup(new UserController(
-                        new UserService(inMemoryUserStorage)), new ErrorHandler())
+                        new UserService(userDbStorage)), new ErrorHandler())
+                .build();
+
+        user = User.builder()
+                .email("login@mail.ll")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
                 .build();
     }
 
     @Test
     public void createPostWhenUserFieldsAreCorrect() throws Exception {
-        User user = new User("email@leo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -59,8 +75,11 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenEmailIsNull() throws Exception {
-        User user = new User(null, "login", "name",
-                LocalDate.parse("1995-12-27"));
+        user = User.builder()
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -76,8 +95,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenEmailIsEmpty() throws Exception {
-        User user = new User("", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        user = User.builder()
+                .email("")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -93,8 +116,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenEmailWithOutAtSign() throws Exception {
-        User user = new User("emailleo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        user = User.builder()
+                .email("emailleo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -110,8 +137,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenEmailHasUnacceptableSymbols() throws Exception {
-        User user = new User("ema?il@le o.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        user = userDbStorage.create(User.builder()
+                .email("ema?il@le o.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -127,8 +158,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenLoginIsNull() throws Exception {
-        User user = new User("email@leo.ru", null, "name",
-                LocalDate.parse("1995-12-27"));
+        user = User.builder()
+                .email("email@leo.ru")
+                .login(null)
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -144,8 +179,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenLoginIsNEmpty() throws Exception {
-        User user = new User("email@leo.ru", "", "name",
-                LocalDate.parse("1995-12-27"));
+        user = userDbStorage.create(User.builder()
+                .email("email@leo.ru")
+                .login("")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -161,8 +200,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenLoginHasWhiteSpaces() throws Exception {
-        User user = new User("email@leo.ru", "lo gi n", "name",
-                LocalDate.parse("1995-12-27"));
+        user = userDbStorage.create(User.builder()
+                .email("email@leo.ru")
+                .login("l og in")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -178,8 +221,12 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void createPostWhenBirthdayInFuture() throws Exception {
-        User user = new User("email@leo.ru", "login", "name",
-                LocalDate.now().plusDays(1));
+        user = userDbStorage.create(User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().plusDays(1))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user);
@@ -195,10 +242,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenUserFieldsAreCorrect() throws Exception {
-        User user1 = new User("email@leo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
-        User user2 = new User(1, "updatedemail@leo.ru", "updatedlogin", "Updated name",
-                LocalDate.parse("1999-12-25"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("updatedemail@leo.ru")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -224,10 +280,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updateUserWhenIdIsNotExist() throws Exception {
-        User user1 = new User("email@leo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
-        User user2 = new User(2, "updatedemail@leo.ru", "Updated login", "Updated name",
-                LocalDate.parse("1995-12-25"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = User.builder()
+                .id(2)
+                .email("updatedemail@leo.ru")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -243,16 +308,23 @@ public class UserControllerIntegrationTest {
                         .accept(MediaType.ALL)
                         .content(jsonUser))
                 .andDo(print())
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
 
     @Test
     public void updatePutWhenEmailIsNull() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User(null, "login", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = User.builder()
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -275,10 +347,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenEmailIsEmpty() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -301,10 +382,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenEmailWithOutAtSign() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("emailleo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("updatedemailleo.ru")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -327,10 +417,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenEmailHasUnacceptableSymbols() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("ema?il@le o.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("update?demail@leo.ru")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -353,10 +452,18 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenLoginIsNull() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("email@leo.ru", null, "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = User.builder()
+                .id(1)
+                .email("updatedemail@leo.ru")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -379,10 +486,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenLoginIsNEmpty() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("email@leo.ru", "", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("updatedemail@leo.ru")
+                .login("")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -405,10 +521,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenLoginHasWhiteSpaces() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("email@leo.ru", "lo gi n", "name",
-                LocalDate.parse("1995-12-27"));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("updatedemail@leo.ru")
+                .login("updat ed log in")
+                .name("Updated name")
+                .birthday(LocalDate.now().minusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -431,10 +556,19 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void updatePutWhenBirthdayInFuture() throws Exception {
-        User user1 = new User("email1@leo.ru", "Original login", "Original name",
-                LocalDate.parse("1990-12-27"));
-        User user2 = new User("email@leo.ru", "login", "name",
-                LocalDate.now().plusDays(1));
+        User user1 = User.builder()
+                .email("email@leo.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
+        User user2 = userDbStorage.create(User.builder()
+                .id(1)
+                .email("updatedemail@leo.ru")
+                .login("updatedlogin")
+                .name("Updated name")
+                .birthday(LocalDate.now().plusDays(2))
+                .build());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String jsonUser = objectMapper.writeValueAsString(user1);
@@ -457,11 +591,9 @@ public class UserControllerIntegrationTest {
 
     @Test
     public void getUserListRequest() throws Exception {
-        User user1 = new User("email@leo.ru", "login", "name",
-                LocalDate.parse("1995-12-27"));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        String jsonUser = objectMapper.writeValueAsString(user1);
+        String jsonUser = objectMapper.writeValueAsString(user);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -472,10 +604,10 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].email").value(user1.getEmail()))
-                .andExpect(jsonPath("$[0].login").value(user1.getLogin()))
-                .andExpect(jsonPath("$[0].name").value(user1.getName()))
-                .andExpect(jsonPath("$[0].birthday").value(user1.getBirthday().toString()))
+                .andExpect(jsonPath("$[0].email").value(user.getEmail()))
+                .andExpect(jsonPath("$[0].login").value(user.getLogin()))
+                .andExpect(jsonPath("$[0].name").value(user.getName()))
+                .andExpect(jsonPath("$[0].birthday").value(user.getBirthday().toString()))
                 .andReturn();
     }
 
@@ -498,13 +630,13 @@ public class UserControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("email")
-                        .value(inMemoryUserStorage.findById(1).getEmail()))
+                        .value(userDbStorage.findById(1).getEmail()))
                 .andExpect(jsonPath("login")
-                        .value(inMemoryUserStorage.findById(1).getLogin()))
+                        .value(userDbStorage.findById(1).getLogin()))
                 .andExpect(jsonPath("name")
-                        .value(inMemoryUserStorage.findById(1).getName()))
+                        .value(userDbStorage.findById(1).getName()))
                 .andExpect(jsonPath("birthday")
-                        .value(inMemoryUserStorage.findById(1).getBirthday().toString()))
+                        .value(userDbStorage.findById(1).getBirthday().toString()))
                 .andReturn();
     }
 
@@ -522,17 +654,24 @@ public class UserControllerIntegrationTest {
     @Test
     public void finByIdWhenIdIsNotExist() throws Exception {
         String jsonUser;
+
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build());
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .content(jsonUser))
                     .andReturn();
         }
+
         this.mockMvc.perform(MockMvcRequestBuilders.get("/users/3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -548,8 +687,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -564,35 +708,6 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("invitee")
                         .value(2))
                 .andReturn();
-    }
-
-    @Test
-    public void putNewFriendWhenFriendsAreAlreadyAdded() throws Exception {
-        String jsonUser;
-        for (int i = 1; i < 3; i++) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
-            this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
-                            .content(jsonUser))
-                    .andReturn();
-        }
-
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/2"))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/2/friends/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result
-                        .getResolvedException() instanceof ValidationException))
-                .andExpect(result -> assertEquals("Пользователи: " + inMemoryUserStorage.findById(2) +
-                                " и " + inMemoryUserStorage.findById(1) + "  уже являются друзьями",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 
     @Test
@@ -613,8 +728,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -640,8 +760,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -676,8 +801,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -691,13 +821,13 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email")
-                        .value(inMemoryUserStorage.findById(2).getEmail()))
+                        .value(userDbStorage.findById(2).getEmail()))
                 .andExpect(jsonPath("$[0].login")
-                        .value(inMemoryUserStorage.findById(2).getLogin()))
+                        .value(userDbStorage.findById(2).getLogin()))
                 .andExpect(jsonPath("$[0].name")
-                        .value(inMemoryUserStorage.findById(2).getName()))
+                        .value(userDbStorage.findById(2).getName()))
                 .andExpect(jsonPath("$[0].birthday")
-                        .value(inMemoryUserStorage.findById(2).getBirthday().toString()))
+                        .value(userDbStorage.findById(2).getBirthday().toString()))
                 .andReturn();
     }
 
@@ -707,8 +837,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 3; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -716,7 +851,11 @@ public class UserControllerIntegrationTest {
                     .andReturn();
         }
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends"))
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/2"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/2/friends"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", empty()))
                 .andReturn();
@@ -739,8 +878,13 @@ public class UserControllerIntegrationTest {
         for (int i = 1; i < 4; i++) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();
-            jsonUser = objectMapper.writeValueAsString(new User(i + "email1@leo.ru", "login" + i, "name" + i,
-                    LocalDate.parse("1990-12-27").plusYears(i)));
+            jsonUser = objectMapper.writeValueAsString(
+                    userDbStorage.create(User.builder()
+                            .email(i + "email1@leo.ru")
+                            .login("login" + i)
+                            .name("name" + i)
+                            .birthday(LocalDate.parse("1990-12-27").plusYears(i))
+                            .build()));
             this.mockMvc.perform(MockMvcRequestBuilders.post("/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -753,20 +897,23 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users/1/friends/3"))
                 .andExpect(status().isOk())
                 .andReturn();
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/users/3/friends/1"))
+                .andExpect(status().isOk())
+                .andReturn();
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users/3/friends/2"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends/common/2"))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/users/1/friends/common/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].email")
-                        .value(inMemoryUserStorage.findById(3).getEmail()))
+                        .value(userDbStorage.findById(2).getEmail()))
                 .andExpect(jsonPath("$[0].login")
-                        .value(inMemoryUserStorage.findById(3).getLogin()))
+                        .value(userDbStorage.findById(2).getLogin()))
                 .andExpect(jsonPath("$[0].name")
-                        .value(inMemoryUserStorage.findById(3).getName()))
+                        .value(userDbStorage.findById(2).getName()))
                 .andExpect(jsonPath("$[0].birthday")
-                        .value(inMemoryUserStorage.findById(3).getBirthday().toString()))
+                        .value(userDbStorage.findById(2).getBirthday().toString()))
                 .andReturn();
     }
 

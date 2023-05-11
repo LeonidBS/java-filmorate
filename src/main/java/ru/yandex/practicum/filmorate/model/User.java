@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class User {
 
     @PositiveOrZero

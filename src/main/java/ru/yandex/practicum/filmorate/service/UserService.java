@@ -1,26 +1,70 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.IdNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IdPassingException;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Component
-@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+
+    @Autowired
+    public UserService(@Qualifier("db") UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
+
+    public List<User> findAll() {
+        return userStorage.findAll();
+    }
+
+    public User findById(Integer id) {
+        User user = userStorage.findById(id);
+
+        if (user == null) {
+            log.error("Пользователь с переданным ID {} не существует", id);
+            throw new IdNotFoundException("Не существует пользвателя с ID: " + id);
+        }
+
+        return user;
+    }
+
+    public User create(User user) {
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
+        log.debug("Добавен пользователь: {}", user);
+
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+
+        if (userStorage.findById(user.getId()) == null) {
+            log.error("Пользователь с переданным ID {} не существует", user.getId());
+            throw new IdNotFoundException("Не существует пользвателя с ID " + user.getId());
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        userStorage.update(user);
+        log.debug("Обновлен пользователь: {}", user);
+
+        return user;
+    }
 
     public Friends addFriendById(Integer id, Integer friendId) {
 
@@ -30,8 +74,8 @@ public class UserService {
                     + id + ", " + friendId);
         }
 
-        userStorage.findById(id);
-        userStorage.findById(friendId);
+        findById(id);
+        findById(friendId);
         return (userStorage.addFriends(id, friendId));
     }
 
@@ -43,53 +87,22 @@ public class UserService {
                     + id + ", " + friendId);
         }
 
+        findById(id);
+        findById(friendId);
+
         return userStorage.deleteFriends(id, friendId);
     }
 
     public List<User> findFriendsById(Integer id) {
         userStorage.findById(id);
-        return userStorage.findAllFriends().stream()
-                .filter(friends -> friends.getInviter().equals(id)
-                        | friends.getInvitee().equals(id))
-                .map(friends -> {
-                    if (friends.getInviter().equals(id)) {
-                        return userStorage.findById(friends.getInvitee());
-                    } else {
-                        return userStorage.findById(friends.getInviter());
-                    }
-                })
-                .sorted(Comparator.comparingInt(User::getId))
-                .collect(Collectors.toList());
+        return userStorage.findFriendsById(id);
     }
 
     public List<User> findMutualFriendsByTwoIds(Integer id, Integer friendId) {
         userStorage.findById(id);
         userStorage.findById(friendId);
-        Friends friends = new Friends(id, friendId);
 
-        return userStorage.findAllFriends().stream()
-                .filter(f -> (f.getInviter().equals(id) || f.getInvitee().equals(id))
-                        || (f.getInviter().equals(friendId) || f.getInvitee().equals(friendId)))
-                .filter(f -> !f.equals(friends))
-                .map(f -> {
-                    if (f.getInviter().equals(id) || f.getInviter().equals(friendId)) {
-                        return userStorage.findById(f.getInvitee());
-                    } else {
-                        return userStorage.findById(f.getInviter());
-                    }
-                })
-                .collect(Collectors.toList())
-                .stream()
-                .collect(Collectors.groupingBy(Function.identity()))
-                .entrySet()
-                .stream()
-                .filter(e -> e.getValue().size() == 2)
-                .map(Map.Entry::getKey)
-                .sorted(Comparator.comparingInt(User::getId))
-                .collect(Collectors.toList());
+        return userStorage.findMutualFriendsByTwoIds(id, friendId);
     }
 
-    public User findById(Integer id) {
-        return userStorage.findById(id);
-    }
 }
