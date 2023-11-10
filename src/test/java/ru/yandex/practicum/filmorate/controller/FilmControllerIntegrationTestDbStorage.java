@@ -647,7 +647,7 @@ class FilmControllerIntegrationTestDbStorage {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/films/popular/?count=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name").value(filmDbStorage
                         .findById(2).getName()))
                 .andExpect(jsonPath("$[0].description").value(filmDbStorage
