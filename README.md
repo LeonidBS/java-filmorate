@@ -1,5 +1,8 @@
 # java-filmorate
-Filmorate project.
+Filmorate project. This is movies rating service provides users to add, update, rate, search, select movies
+Stack: REST-service with using of Spring Boot, Maven, Lombok, Database H2, API is JDBC.
+Link to GitHub: https://github.com/LeonidBS/java-filmorate.git
+
 #  **Database design** #
 The database model has been developed as per the preliminary technical requirement of Sprint #11 <br/>
 <br/>
