@@ -73,7 +73,7 @@ public class Film {
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Film(@JsonProperty("name") String name,
                 @JsonProperty("description") String description,
-                @JsonProperty("releaseDate") LocalDate releaseDate,
+                @JsonProperty("createdOn") LocalDate createdOn,
                 @JsonProperty("duration") int duration,
                 @JsonProperty("likes") Map<Integer, Emoji> likes,
                 @JsonProperty("mpa") Mpa mpa,

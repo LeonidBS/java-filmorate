@@ -1,5 +1,35 @@
 # java-filmorate
-Filmorate project.
+Filmorate project. This is movies rating service provides users to add, update, rate, search, select movies
+
+
+## Stack
+![](https://img.shields.io/badge/language-Java 11-orange)
+![](https://img.shields.io/badge/build_automation_tool-Maven-red)
+![](https://img.shields.io/badge/tools-Lombok-orange)
+![](https://img.shields.io/badge/framework-Spring_boot-green)
+![](https://img.shields.io/badge/database-H2Database-blue)
+![](https://img.shields.io/badge/database-JDBC-grey)
+![](https://img.shields.io/badge/test-JUnit-grey)
+
+## Function
+1. Create User;
+2. Update User;
+3. Retrieve a list of all Users;
+4. Retrieve information about a specific User;
+5. Add friends;
+6. Remove from friends;
+7. Retrieve a list of friends of a specific User;
+8. Retrieve a list of mutual friends.
+
+9. Create a Film;
+10. Update Film;
+11. Retrieve a list of all Films;
+12. Retrieve information about a specific Film;
+13. Like;
+14. Delete likes;
+15. Change genres and film ratings of the Film Association
+16. Retrieve top popular movies
+
 #  **Database design** #
 The database model has been developed as per the preliminary technical requirement of Sprint #11 <br/>
 <br/>
@@ -98,6 +128,9 @@ String sql = "SELECT f.id,   <br/
 "LIMIT ?   <br/
 return jdbcTemplate.query(sql, new Object[]{count},   <br/
 new FilmMaker(jdbcTemplate));   <br/
+
+#### Development of the project is planned
+
 
 
 
