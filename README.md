@@ -1,7 +1,33 @@
 # java-filmorate
 Filmorate project. This is movies rating service provides users to add, update, rate, search, select movies
-Stack: REST-service with using of Spring Boot, Maven, Lombok, Database H2, API is JDBC.
-Link to GitHub: https://github.com/LeonidBS/java-filmorate.git
+
+## Stack
+![](https://img.shields.io/badge/language-Java 11-orange)
+![](https://img.shields.io/badge/build_automation_tool-Maven-red)
+![](https://img.shields.io/badge/tools-Lombok-orange)
+![](https://img.shields.io/badge/framework-Spring_boot-green)
+![](https://img.shields.io/badge/database-H2Database-blue)
+![](https://img.shields.io/badge/database-JDBC-grey)
+![](https://img.shields.io/badge/test-JUnit-brown)
+
+## Function
+1. Create User;
+2. Update User;
+3. Retrieve a list of all Users;
+4. Retrieve information about a specific User;
+5. Add friends;
+6. Remove from friends;
+7. Retrieve a list of friends of a specific User;
+8. Retrieve a list of mutual friends.
+
+9. Create a Film;
+10. Update Film;
+11. Retrieve a list of all Films;
+12. Retrieve information about a specific Film;
+13. Like;
+14. Delete likes;
+15. Change genres and film ratings of the Film Association
+16. Retrieve top popular movies
 
 #  **Database design** #
 The database model has been developed as per the preliminary technical requirement of Sprint #11 <br/>
@@ -21,9 +47,9 @@ The database model has been developed as per the preliminary technical requireme
    user_id integer [primary key] <br/>
    emoji ENUM(LIKE) <br/>
    <br/>
-     Indexes { <br/>
-      (film_id, user_id) [name:"like_id"] <br/>
-     } <br/>
+   Indexes { <br/>
+   (film_id, user_id) [name:"like_id"] <br/>
+   } <br/>
    } <br/>
    <br/>
 3. Table genres { <br/>
@@ -49,9 +75,9 @@ The database model has been developed as per the preliminary technical requireme
    invitee integer [not null] <br/>
    status bool <br/>
    <br/>
-     Indexes { <br/>
-      (inviter, invitee) [name:"friend_id"] <br/>
-     } <br/>
+   Indexes { <br/>
+   (inviter, invitee) [name:"friend_id"] <br/>
+   } <br/>
    } <br/>
    <br/>
 #### References: ####
@@ -65,9 +91,9 @@ Ref: "films"."id" < "films_likes"."film_id" <br/>
 
 
 ## **Database model diagram** ##
- 
+
 ![Filmorate database diagram](https://github.com/LeonidBS/java-filmorate/blob/add-database/resources/filmorate_db_diagram1.png)
- 
+
 
 ## **SQL queries:** ##
 
@@ -82,7 +108,7 @@ f.release_date,  <br/
 f.duration, <br/
 m.id as mpa_id, <br/
 m.name as mpa_name  <br/
-FROM films f 
+FROM films f
 INNER JOIN mpa m ON f.mpa_id=m.id )  <br/>
 
 public List<Film> topFilms(Integer count) {
@@ -101,6 +127,9 @@ String sql = "SELECT f.id,   <br/
 "LIMIT ?   <br/
 return jdbcTemplate.query(sql, new Object[]{count},   <br/
 new FilmMaker(jdbcTemplate));   <br/
+
+#### Development of the project is planned
+
 
 
 
